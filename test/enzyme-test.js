@@ -11,7 +11,7 @@ import GuessCounter from '../lib/Components/GuessCounter';
 import PreviousGuesses from '../lib/Components/PreviousGuesses';
 import Score from '../lib/Components/Score';
 
-
+//17 shallow tests 6 mount tests
 describe('<Application/>', ()=>{
   it('should render an Input component', ()=>{
     const wrapper = shallow(<Application/>)
@@ -36,6 +36,19 @@ describe('<Application/>', ()=>{
     const Score = wrapper.find('Score')
     expect(Score).to.have.length(1);
   })
+
+  it('calls componentDidMount', () => {
+    sinon.spy(Application.prototype, 'componentDidMount');
+      const wrapper = mount(<Application />);
+      expect(Application.prototype.componentDidMount.calledOnce).to.equal(true);
+  });
+
+  it('should keep track of previous guesses in state', () => {
+    const wrapper = mount(<Application />);
+    wrapper.setState({guessArray: [1,2,3]
+    });
+    expect(wrapper.state('guessArray').length).to.equal(3);
+  });
 
 })
 
@@ -67,6 +80,26 @@ describe('<Input/>', ()=>{
     expect(NewRange).to.have.length(1);
   })
 
+  it('should update state of userGuess as a guess is typed', () => {
+    const wrapper = mount(<Input />);
+    const input = wrapper.find('.numberInput');
+
+    expect (wrapper.state('userGuess')).to.equal('');
+    input.simulate('change', {target: {value: '1'} });
+    expect (wrapper.state('userGuess')).to.equal('1');
+  })
+
+  it('the input field should clear if user clicks clear button', () => {
+    const wrapper = mount(<Input />);
+    const input = wrapper.find('.numberInput');
+    const clearButton = wrapper.find('.clear');
+
+    input.simulate('change', {target: {value: '1'} });
+    expect(wrapper.state('userGuess')).to.equal('1');
+    clearButton.simulate('click');
+    expect(wrapper.state('userGuess')).to.equal('');
+  });
+
 })
 
 describe('<NewRange/>', ()=>{
@@ -84,6 +117,25 @@ describe('<NewRange/>', ()=>{
     const wrapper = shallow(<NewRange/>)
     expect(wrapper.find('.new-range')).to.have.length(1);
   })
+
+  it('should update state of newMin as a new min is entered', () => {
+    const wrapper = mount(<NewRange />);
+    const input = wrapper.find('.new-min');
+
+    expect (wrapper.state('newMin')).to.equal('');
+    input.simulate('change', {target: {value: '1'} });
+    expect (wrapper.state('newMin')).to.equal('1');
+  })
+
+  it('should update state of newMax as a new max is entered', () => {
+    const wrapper = mount(<NewRange />);
+    const input = wrapper.find('.new-max');
+
+    expect (wrapper.state('newMax')).to.equal('');
+    input.simulate('change', {target: {value: '1'} });
+    expect (wrapper.state('newMax')).to.equal('1');
+  })
+
 })
 
 describe('<Output/>', ()=>{
@@ -115,12 +167,5 @@ describe('<GuessCounter/>', ()=>{
   it('should render an show guesses button', ()=>{
     const wrapper = shallow(<GuessCounter/>)
     expect(wrapper.find('.show-guesses')).to.have.length(1);
-  })
-})
-
-describe('<PreviousGuesses/>', ()=>{
-  it.skip('should render a list of previous guesses', ()=>{
-    const wrapper = shallow(<PreviousGuesses/>)
-    expect(wrapper.find('.guess-list')).to.have.length(1);
   })
 })
