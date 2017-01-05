@@ -1,0 +1,10 @@
+li {
+  display: inline;
+  list-style: none;
+  &:after{
+    content: ", ";
+  }
+  &:last-child:after {
+      content: "";
+  }
+}
